@@ -2,51 +2,80 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>猫狗菜谱</title>
+<meta name="theme-color" content="#78d6cf">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="猫狗菜谱">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="site.webmanifest">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <section class="auth-screen" id="authScreen">
   <div class="auth-card">
-    <h1>猫狗菜谱</h1>
-    <p>请输入 Supabase 中创建好的账号和密码。登录后，3 个账户会同步同一份菜谱、冰箱和购物车数据。</p>
-    <form id="loginForm">
+    <div class="auth-brand">
+      <img src="icon-192.png" alt="猫狗菜谱图标" class="auth-logo">
+      <div>
+        <h1>猫狗菜谱</h1>
+        <p>家庭菜谱、备菜清单、购物车同步</p>
+      </div>
+    </div>
+    <form id="loginForm" class="auth-form">
       <label><span>账号 / 邮箱</span><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required placeholder="例如：family1@example.com"></label>
       <label><span>密码</span><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="请输入密码"></label>
       <button class="btn" id="loginBtn" type="submit">登录</button>
       <div class="auth-msg" id="loginMsg"></div>
     </form>
-    <div class="auth-foot">iPhone 上请用 Safari/Chrome 打开 GitHub Pages 地址。首次打开后可以“添加到主屏幕”。</div>
+    <div class="auth-foot">iPhone 上可在 Safari 中点“分享”→“添加到主屏幕”，图标会使用这个菜谱 App 图标。</div>
   </div>
 </section>
 
 <main class="app" id="appMain" hidden>
-  <div class="top-actions">
-    <span class="pill sync" id="syncStatus">未登录</span>
-    <span class="pill sync" id="accountEmail"></span>
-    <button class="pill danger" id="logoutBtn">退出登录</button>
-  </div>
+  <header class="app-header">
+    <div>
+      <div class="app-kicker">共享家庭菜谱</div>
+      <h1>猫狗菜谱</h1>
+      <p>更像真正 App 的菜谱、备菜与购物清单</p>
+    </div>
+    <div class="top-actions">
+      <span class="pill sync" id="syncStatus">未登录</span>
+      <span class="pill sync email-pill" id="accountEmail"></span>
+      <button class="pill danger" id="logoutBtn">退出</button>
+    </div>
+  </header>
 
   <section class="hero">
-    <h1>猫狗菜谱</h1>
-    <p>家庭菜谱、备菜清单、购物车同步。</p>
-    <div class="food"><div class="sun"></div><div class="fish"></div><div class="meat"></div><div class="carrot"></div><div class="bone"></div><div class="bowl"><div class="paw"></div></div></div>
+    <div class="hero-copy">
+      <span class="hero-badge">菜单封面已升级</span>
+      <h2>自动匹配更精致、更真实的食物风格封面</h2>
+      <p>根据菜单名称与食材关键词，自动选择更符合菜谱的实景美食图。</p>
+    </div>
+    <div class="hero-preview-card">
+      <img src="icon-192.png" alt="猫狗菜谱图标">
+      <div>
+        <b>桌面图标已就绪</b>
+        <span>可添加到 iPhone 主屏幕</span>
+      </div>
+    </div>
   </section>
 
   <section class="toolbar">
     <div class="search"><span>🔎</span><input id="searchInput" placeholder="搜索菜谱、食材、分类..."></div>
-    <nav class="tabs">
+    <nav class="tabs" aria-label="主导航">
       <button class="tab active" data-tab="recipes">菜谱</button>
       <button class="tab" data-tab="prep">备菜</button>
       <button class="tab" data-tab="cart">购物车</button>
       <button class="tab" data-tab="fridge">冰箱</button>
     </nav>
-    <button class="pill primary" id="addRecipeBtn">＋菜谱</button>
+    <button class="pill primary add-btn" id="addRecipeBtn">＋ 菜谱</button>
   </section>
 
   <section id="recipes" class="view active">
-    <div class="head"><h2>菜谱/菜单</h2><small id="recipeCount"></small></div>
+    <div class="head"><h2>菜谱 / 菜单</h2><small id="recipeCount"></small></div>
     <div id="recipeGrid" class="grid"></div>
   </section>
 
@@ -67,7 +96,7 @@
 
   <section id="fridge" class="view">
     <div class="head"><h2>冰箱</h2><small>常用食材，点 X 加入购物车</small></div>
-    <div class="panel"><div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end"><label><span>新增常用食材</span><input id="fridgeNameField" placeholder="例如：牛奶"></label><button class="btn" onclick="addFridgeItem()">添加</button></div></div>
+    <div class="panel"><div class="fridge-add"><label><span>新增常用食材</span><input id="fridgeNameField" placeholder="例如：牛奶"></label><button class="btn" onclick="addFridgeItem()">添加</button></div></div>
     <div id="fridgeList" class="list"></div>
   </section>
 </main>
