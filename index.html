@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 <section class="auth-screen" id="authScreen">
@@ -70,7 +70,13 @@
 
   <section id="recipes" class="view active">
     <div class="head"><h2>菜谱 / 菜单</h2><small id="recipeCount"></small></div>
-    <div id="recipeGrid" class="grid"></div>
+    <div class="recipe-subtabs" id="recipeSubtabs">
+      <button class="subtab active" data-recipe-type="全部">全部</button>
+      <button class="subtab" data-recipe-type="热菜">热菜</button>
+      <button class="subtab" data-recipe-type="凉菜">凉菜</button>
+      <button class="subtab" data-recipe-type="其他">其他</button>
+    </div>
+    <div id="recipeGrid" class="recipe-list"></div>
   </section>
 
   <section id="prep" class="view">
@@ -116,6 +122,6 @@
 
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
