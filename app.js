@@ -1,5 +1,6 @@
 const SUPABASE_URL="https://inavmauzukbqjsekquxw.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_il1W1s6uNwgcFwGAs4HFHw_AuB-hiaS";
+
 const APP_ROW_ID="main"; // 3 个账号共享这一行数据
 const STORAGE_KEY="cat-dog-recipe-supabase-cache-v1";
 const uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():"id-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
