@@ -202,3 +202,18 @@
 
 /* v11 */
 .auth-msg{white-space:pre-wrap;line-height:1.5;}
+
+
+/* v12: 分类只允许选择 热菜/凉菜/其他 */
+select{
+  width:100%;
+  border:0;
+  outline:0;
+  border-radius:17px;
+  padding:13px 14px;
+  background:var(--soft);
+  font:inherit;
+  font-weight:750;
+  color:var(--ink);
+  appearance:none;
+}

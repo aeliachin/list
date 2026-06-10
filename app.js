@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v11";
+const STORAGE_KEY="family-recipe-supabase-cache-v12";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -45,7 +45,7 @@ function esc(s=""){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;
 function parseAmount(s=""){const m=String(s).trim().match(/^(\d+(?:\.\d+)?)\s*(.*)$/);return{needQty:m?num(m[1]):0,unit:m?(m[2]||"").trim():""}}
 function normIng(i){const p=parseAmount(i.amount||"");const need=i.needQty!=null?num(i.needQty):p.needQty;const unit=(i.unit!=null?i.unit:p.unit||"").trim();const have=i.haveQty!=null?num(i.haveQty):(i.have||i.bought?need:0);return{id:i.id||uid(),name:i.name||"",needQty:need,unit,haveQty:Math.min(have,need||have),amount:fmt(need,unit)}}
 function normFridge(i){const x=normIng(i);return{...x,inCart:Boolean(i.inCart)||buyQty(x)>0}}
-function normalize(raw){const src=raw&&Array.isArray(raw.recipes)?raw:{recipes:sampleRecipes,currentRecipeId:sampleRecipes[0].id,fridge:sampleFridge};return{recipes:(src.recipes||[]).map(r=>({...r,image:"",ingredients:(r.ingredients||[]).map(normIng)})),fridge:Array.isArray(src.fridge)?src.fridge.map(normFridge):sampleFridge.map(normFridge),currentRecipeId:src.currentRecipeId||src.recipes?.[0]?.id||sampleRecipes[0].id}}
+function normalize(raw){const src=raw&&Array.isArray(raw.recipes)?raw:{recipes:sampleRecipes,currentRecipeId:sampleRecipes[0].id,fridge:sampleFridge};return{recipes:(src.recipes||[]).map(r=>({...r,category:normalizeCategory(r.category),image:"",ingredients:(r.ingredients||[]).map(normIng)})),fridge:Array.isArray(src.fridge)?src.fridge.map(normFridge):sampleFridge.map(normFridge),currentRecipeId:src.currentRecipeId||src.recipes?.[0]?.id||sampleRecipes[0].id}}
 function loadLocalState(){try{return normalize(JSON.parse(localStorage.getItem(STORAGE_KEY)))}catch{return normalize(null)}}
 function toast(msg){const el=$("#toast");if(!el)return;el.textContent=msg;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),1900)}
 function setLoginMsg(msg){const el=$("#loginMsg");if(el)el.textContent=msg}
@@ -104,11 +104,12 @@ function render(){renderRecipes();renderPrep();renderCart();renderFridge();save(
 function recipeSortName(recipe){
   return String(recipe.name||"").trim().toLocaleLowerCase("zh-Hans-CN");
 }
+function normalizeCategory(category){
+  const c=String(category||"").trim();
+  return ["热菜","凉菜","其他"].includes(c)?c:"其他";
+}
 function recipeType(recipe){
-  const text=[recipe.category,recipe.name,...(recipe.ingredients||[]).map(i=>i.name)].join(" ");
-  if(/凉菜|冷菜|沙拉|拌|凉拌|拍黄瓜|冷盘/i.test(text))return "凉菜";
-  if(/其他|主食|早餐|甜品|饮品|汤|粥|面|饭|烘焙|点心/i.test(text))return "其他";
-  return "热菜";
+  return normalizeCategory(recipe.category);
 }
 function filteredRecipes(){
   const k=$("#searchInput").value.trim().toLowerCase();
@@ -146,7 +147,7 @@ function renderRecipes(){
           <div class="row">
             <div>
               <div class="meta">⏱ ${esc(r.time||"未填")}　🍽 ${esc(r.servings||"未填")}</div>
-              <div class="small" style="margin-top:6px">分类：${esc(r.category||recipeType(r))}　${need?`待买 ${need} 项`:"食材已备齐"}</div>
+              <div class="small" style="margin-top:6px">分类：${esc(recipeType(r))}　${need?`待买 ${need} 项`:"食材已备齐"}</div>
             </div>
             <button class="icon-btn" onclick="deleteRecipe('${r.id}')" title="删除菜谱">🗑</button>
           </div>
@@ -161,7 +162,7 @@ function renderRecipes(){
     </article>`;
   }).join(""):`<div class="empty">这个目录里还没有菜谱。</div>`;
 }
-function renderPrep(){const r=state.recipes.find(x=>x.id===currentRecipeId)||state.recipes[0];if(!r){$("#prepDetail").innerHTML=`<div class="empty">还没有菜谱。</div>`;return}currentRecipeId=r.id;$("#prepDetail").innerHTML=`<div class="panel detail"><div class="detail-cover"><div><b>${esc(r.name)}</b><div class="meta" style="margin-top:10px">⏱ ${esc(r.time||"未填")}　🍽 ${esc(r.servings||"未填")}　🛒 ${r.ingredients.filter(i=>buyQty(i)>0).length} 件待买</div></div></div><div><span class="tag">${esc(r.category||"家庭")}</span><h2>${esc(r.name)}</h2><div class="actions" style="margin-top:16px"><button class="btn yellow" onclick="switchTab('cart')">去购物车</button><button class="btn light" onclick="openEditor('${r.id}')">编辑菜谱</button></div><div class="actions" style="margin-top:10px"><button class="btn soft-danger" onclick="deleteRecipe('${r.id}')">删除这道菜谱</button><button class="btn" onclick="switchTab('recipes')">返回菜谱</button></div></div></div><div class="panel"><div class="head" style="margin:0 0 12px"><h2>用料检查</h2><small>点 X 表示缺少</small></div><div class="list">${r.ingredients.map(i=>{const b=buyQty(i);return `<div class="item ${b===0?"ready":""}"><button class="xbtn ${b>0?"active":""}" onclick="markMissing('${r.id}','${i.id}')">×</button><div><div class="name">${esc(i.name)}</div><div class="small">需要：${fmt(i.needQty,i.unit)}</div><div class="small">家里已有：${fmt(i.haveQty,i.unit)}</div><div class="small">还需购买：${fmt(b,i.unit)}</div></div><div class="qtybox"><div class="small">家里已有数量</div><div class="qtyline"><input class="qty" type="number" min="0" max="${i.needQty}" step="0.1" value="${i.haveQty}" onchange="setHaveQty('${r.id}','${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div></div><span class="badge ok">${b===0?"已足够":`差 ${fmt(b,i.unit)}`}</span></div>`}).join("")}</div></div><div class="panel"><h2 style="margin-top:0">做法</h2><div style="white-space:pre-wrap;line-height:1.8">${esc(r.steps||"还没有填写做法。")}</div></div>`}
+function renderPrep(){const r=state.recipes.find(x=>x.id===currentRecipeId)||state.recipes[0];if(!r){$("#prepDetail").innerHTML=`<div class="empty">还没有菜谱。</div>`;return}currentRecipeId=r.id;$("#prepDetail").innerHTML=`<div class="panel detail"><div class="detail-cover"><div><b>${esc(r.name)}</b><div class="meta" style="margin-top:10px">⏱ ${esc(r.time||"未填")}　🍽 ${esc(r.servings||"未填")}　🛒 ${r.ingredients.filter(i=>buyQty(i)>0).length} 件待买</div></div></div><div><span class="tag">${esc(recipeType(r))}</span><h2>${esc(r.name)}</h2><div class="actions" style="margin-top:16px"><button class="btn yellow" onclick="switchTab('cart')">去购物车</button><button class="btn light" onclick="openEditor('${r.id}')">编辑菜谱</button></div><div class="actions" style="margin-top:10px"><button class="btn soft-danger" onclick="deleteRecipe('${r.id}')">删除这道菜谱</button><button class="btn" onclick="switchTab('recipes')">返回菜谱</button></div></div></div><div class="panel"><div class="head" style="margin:0 0 12px"><h2>用料检查</h2><small>点 X 表示缺少</small></div><div class="list">${r.ingredients.map(i=>{const b=buyQty(i);return `<div class="item ${b===0?"ready":""}"><button class="xbtn ${b>0?"active":""}" onclick="markMissing('${r.id}','${i.id}')">×</button><div><div class="name">${esc(i.name)}</div><div class="small">需要：${fmt(i.needQty,i.unit)}</div><div class="small">家里已有：${fmt(i.haveQty,i.unit)}</div><div class="small">还需购买：${fmt(b,i.unit)}</div></div><div class="qtybox"><div class="small">家里已有数量</div><div class="qtyline"><input class="qty" type="number" min="0" max="${i.needQty}" step="0.1" value="${i.haveQty}" onchange="setHaveQty('${r.id}','${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div></div><span class="badge ok">${b===0?"已足够":`差 ${fmt(b,i.unit)}`}</span></div>`}).join("")}</div></div><div class="panel"><h2 style="margin-top:0">做法</h2><div style="white-space:pre-wrap;line-height:1.8">${esc(r.steps||"还没有填写做法。")}</div></div>`}
 function collectCartGroups(){const map=new Map(),raw=[];state.recipes.forEach(r=>r.ingredients.forEach(i=>{const b=buyQty(i);if(b>0)raw.push({type:"recipe",source:r.name,recipeId:r.id,itemId:i.id,name:i.name,unit:i.unit,qty:b})}));state.fridge.forEach(i=>{const b=i.inCart?Math.max(1,buyQty(i)||i.needQty||1):buyQty(i);if(i.inCart||b>0)raw.push({type:"fridge",source:"冰箱",itemId:i.id,name:i.name,unit:i.unit,qty:b})});raw.forEach(x=>{const k=keyOf(x.name,x.unit);if(!map.has(k))map.set(k,{key:k,name:x.name,unit:x.unit,total:0,items:[]});const g=map.get(k);g.total+=x.qty;g.items.push(x)});return{groups:[...map.values()],raw}}
 function renderCart(){
   const {groups,raw}=collectCartGroups();
@@ -203,9 +204,9 @@ function setFridgeHave(id,v){const i=state.fridge.find(x=>x.id===id);if(!i)retur
 function addFridgeItem(){const input=$("#fridgeNameField"),name=input.value.trim();if(!name){toast("请输入食材名称");return}state.fridge.unshift({id:uid(),name,needQty:1,unit:"份",haveQty:0,inCart:false});input.value="";render();toast("已加入冰箱")}
 function editFridgeTarget(id){const i=state.fridge.find(x=>x.id===id);if(!i)return;const q=prompt(`目标常备数量：${i.name}`,i.needQty);if(q===null)return;const u=prompt(`单位：${i.name}`,i.unit||"份");i.needQty=num(q)||1;i.unit=(u||i.unit||"份").trim();i.inCart=buyQty(i)>0;render();toast("目标数量已更新")}
 function switchTab(tab){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));setHero(tab);window.scrollTo({top:0,behavior:"smooth"})}
-function openEditor(id=null){editingId=id;const r=state.recipes.find(x=>x.id===id);$("#dialogTitle").textContent=r?"编辑菜谱":"添加菜谱";$("#nameField").value=r?.name||"";$("#categoryField").value=r?.category||"";$("#servingsField").value=r?.servings||"";$("#timeField").value=r?.time||"";$("#ingredientsField").value=r?.ingredients?.map(i=>`${i.name} | ${i.needQty} | ${i.unit}`).join("\n")||"";$("#stepsField").value=r?.steps||"";$("#recipeDialog").showModal()}
+function openEditor(id=null){editingId=id;const r=state.recipes.find(x=>x.id===id);$("#dialogTitle").textContent=r?"编辑菜谱":"添加菜谱";$("#nameField").value=r?.name||"";$("#categoryField").value=normalizeCategory(r?.category||"热菜");$("#servingsField").value=r?.servings||"";$("#timeField").value=r?.time||"";$("#ingredientsField").value=r?.ingredients?.map(i=>`${i.name} | ${i.needQty} | ${i.unit}`).join("\n")||"";$("#stepsField").value=r?.steps||"";$("#recipeDialog").showModal()}
 function parseIngredients(text,old=[]){return text.split("\n").map(x=>x.trim()).filter(Boolean).map(line=>{const [n="",q="",u=""]=line.split("|");const name=n.trim(),oldItem=old.find(i=>i.name===name),need=num(q.trim());return{id:oldItem?.id||uid(),name,needQty:need,unit:u.trim(),haveQty:Math.min(oldItem?.haveQty||0,need),amount:fmt(need,u.trim())}}).filter(i=>i.name)}
-function handleSubmit(e){e.preventDefault();const old=state.recipes.find(r=>r.id===editingId);const recipe={id:old?.id||uid(),name:$("#nameField").value.trim(),category:$("#categoryField").value.trim(),servings:$("#servingsField").value.trim(),time:$("#timeField").value.trim(),image:"",ingredients:parseIngredients($("#ingredientsField").value,old?.ingredients||[]),steps:$("#stepsField").value.trim()};if(!recipe.name||!recipe.ingredients.length){toast("请填写菜名和用料");return}if(old)state.recipes[state.recipes.findIndex(x=>x.id===editingId)]=recipe;else state.recipes.unshift(recipe);currentRecipeId=recipe.id;$("#recipeDialog").close();render();toast("菜单已保存")}
+function handleSubmit(e){e.preventDefault();const old=state.recipes.find(r=>r.id===editingId);const recipe={id:old?.id||uid(),name:$("#nameField").value.trim(),category:normalizeCategory($("#categoryField").value),servings:$("#servingsField").value.trim(),time:$("#timeField").value.trim(),image:"",ingredients:parseIngredients($("#ingredientsField").value,old?.ingredients||[]),steps:$("#stepsField").value.trim()};if(!recipe.name||!recipe.ingredients.length){toast("请填写菜名和用料");return}if(old)state.recipes[state.recipes.findIndex(x=>x.id===editingId)]=recipe;else state.recipes.unshift(recipe);currentRecipeId=recipe.id;$("#recipeDialog").close();render();toast("菜单已保存")}
 function deleteRecipe(id){const recipe=state.recipes.find(r=>r.id===id);if(!recipe)return;if(!confirm(`确定删除菜谱“${recipe.name}”吗？`))return;state.recipes=state.recipes.filter(r=>r.id!==id);if(expandedRecipeId===id)expandedRecipeId=null;currentRecipeId=state.recipes[0]?.id||null;switchTab("recipes");render();toast("菜谱已删除")}
 async function shareShoppingList(){const {groups}=collectCartGroups();if(!groups.length){toast("没有待采购内容");return}const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");if(navigator.share){try{await navigator.share({title:"待采购清单",text});toast("已打开分享菜单")}catch(e){if(e.name!=="AbortError")copyText(text)}}else copyText(text)}
 async function copyText(text){try{await navigator.clipboard.writeText(text)}catch{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}toast("待采购清单已复制，可以粘贴发送")}
