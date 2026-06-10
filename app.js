@@ -1,5 +1,5 @@
-const SUPABASE_URL="https://你的项目.supabase.co";
-const SUPABASE_ANON_KEY="你的-anon-public-key";
+const SUPABASE_URL="https://inavmauzukbqjsekquxw.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_il1W1s6uNwgcFwGAs4HFHw_AuB-hiaS";
 const APP_ROW_ID="main";
 const STORAGE_KEY="cat-dog-recipe-supabase-cache-v2";
 
