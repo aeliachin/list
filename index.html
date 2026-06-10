@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猫狗菜谱</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <h1>猫狗菜谱</h1>
+    <p>请输入 Supabase 中创建好的账号和密码。登录后，3 个账户会同步同一份菜谱、冰箱和购物车数据。</p>
+    <form id="loginForm">
+      <label><span>账号 / 邮箱</span><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required placeholder="例如：family1@example.com"></label>
+      <label><span>密码</span><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="请输入密码"></label>
+      <button class="btn" id="loginBtn" type="submit">登录</button>
+      <div class="auth-msg" id="loginMsg"></div>
+    </form>
+    <div class="auth-foot">iPhone 上请用 Safari/Chrome 打开 GitHub Pages 地址。首次打开后可以“添加到主屏幕”。</div>
+  </div>
+</section>
+<main class="app" id="appMain" hidden>
+  <div class="top-actions"><span class="pill sync" id="syncStatus">未登录</span><span class="pill sync" id="accountEmail"></span><button class="pill danger" id="logoutBtn">退出登录</button><button class="pill" id="exportBtn">下载数据</button><label class="file-label">上传数据<input id="importInput" type="file" accept="application/json"></label></div>
+  <section class="hero"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><h1>猫狗菜谱</h1><p>家庭菜谱、备菜清单、购物车同步。</p><div class="food"><div class="sun"></div><div class="fish"></div><div class="meat"></div><div class="carrot"></div><div class="bone"></div><div class="bowl"><div class="paw"></div></div></div></section>
+  <section class="toolbar"><div class="search"><span>🔎</span><input id="searchInput" placeholder="搜索菜谱、食材、分类..."></div><nav class="tabs"><button class="tab active" data-tab="recipes">菜谱</button><button class="tab" data-tab="prep">备菜</button><button class="tab" data-tab="cart">购物车</button><button class="tab" data-tab="fridge">冰箱</button></nav><button class="pill primary" id="addRecipeBtn">＋菜谱</button></section>
+  <section id="recipes" class="view active"><div class="head"><h2>菜谱/菜单</h2><small id="recipeCount"></small></div><div id="recipeGrid" class="grid"></div></section>
+  <section id="prep" class="view"><div class="head"><h2>备菜区域</h2><small>点食材前的 X 表示缺少，会同步到购物车</small></div><div id="prepDetail"></div></section>
+  <section id="cart" class="view"><div class="head"><h2>购物车</h2><small>同名食材会自动合并统计</small></div><div class="panel"><button class="btn" style="width:100%" onclick="shareShoppingList()">发送待采购清单</button></div><div class="summarygrid"><div class="summary"><b id="cartNeedCount">0</b><span class="small">合并后待采购</span></div><div class="summary"><b id="cartRawCount">0</b><span class="small">原始待采购项</span></div></div><div id="cartList" class="list" style="margin-top:16px"></div></section>
+  <section id="fridge" class="view"><div class="head"><h2>冰箱</h2><small>常用食材，点 X 加入购物车</small></div><div class="panel"><div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end"><label><span>新增常用食材</span><input id="fridgeNameField" placeholder="例如：牛奶"></label><button class="btn" onclick="addFridgeItem()">添加</button></div></div><div id="fridgeList" class="list"></div></section>
+</main>
+<dialog id="recipeDialog"><form method="dialog" class="dialog-body" id="recipeForm"><div class="dialog-head"><h3 id="dialogTitle">添加菜谱</h3><button class="close" type="button" id="closeDialog">×</button></div><div class="formgrid"><label><span>菜名</span><input id="nameField" required placeholder="例如：番茄牛腩"></label><label><span>分类</span><input id="categoryField" placeholder="家常菜 / 快手菜 / 汤"></label><label><span>人数</span><input id="servingsField" placeholder="3-4人"></label><label><span>耗时</span><input id="timeField" placeholder="45分钟"></label><label class="wide"><span>图片链接</span><input id="imageField" placeholder="可填网络图片 URL，或留空使用渐变封面"></label><label class="wide"><span>用料：每行一个，格式：食材 | 需要数量 | 单位</span><textarea id="ingredientsField" required placeholder="番茄 | 3 | 个
+牛腩 | 500 | g
+土豆 | 10 | 个"></textarea></label><label class="wide"><span>做法</span><textarea id="stepsField" placeholder="1. 准备食材。
+2. 烹饪。
+3. 装盘。"></textarea></label></div><div class="actions" style="margin-top:14px"><button class="btn yellow" type="button" id="cancelBtn">取消</button><button class="btn" type="submit">保存</button></div></form></dialog>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
