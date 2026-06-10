@@ -18,3 +18,82 @@
   padding-top: max(24px, env(safe-area-inset-top));
   padding-bottom: max(24px, env(safe-area-inset-bottom));
 }
+
+
+/* v8: 购物车列表紧凑优化 */
+.cart-item{
+  grid-template-columns: 1fr auto;
+  align-items: stretch;
+  gap: 14px;
+}
+.cart-info{
+  min-width: 0;
+}
+.source-list{
+  margin-top: 4px;
+  line-height: 1.55;
+}
+.source-list > span{
+  display: inline-block;
+  margin-bottom: 2px;
+}
+.source-line{
+  display: block;
+  overflow-wrap: anywhere;
+}
+.source-line b{
+  font-weight: 900;
+  color: var(--ink);
+}
+.cart-buybox{
+  width: min(210px, 42vw);
+  display: grid;
+  gap: 8px;
+  align-content: center;
+}
+.cart-controls{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.cart-qty{
+  width: 100%;
+  height: 44px;
+  padding: 8px 12px;
+  border-radius: 16px;
+}
+.cart-mini{
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 16px;
+  font-size: 15px;
+}
+@media(max-width:760px){
+  .cart-item{
+    grid-template-columns: 1fr auto;
+  }
+  .cart-buybox{
+    width: 190px;
+  }
+}
+@media(max-width:520px){
+  .cart-item{
+    grid-template-columns: 1fr;
+  }
+  .cart-buybox{
+    width: 100%;
+    align-content: start;
+  }
+  .cart-controls{
+    grid-template-columns: minmax(88px, 112px) minmax(112px, 150px);
+    align-items: center;
+  }
+  .cart-qty{
+    min-width: 0;
+  }
+  .cart-mini{
+    min-width: 0;
+    white-space: nowrap;
+  }
+}
