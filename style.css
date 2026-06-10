@@ -97,3 +97,8 @@
     white-space: nowrap;
   }
 }
+
+
+/* v9: local cropped hero banners */
+.hero-picture{background-color:#f4f7f8;background-position:center center;}
+@media(min-width:881px){.hero-picture{width:min(360px,44vw);height:186px;}}

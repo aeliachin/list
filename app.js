@@ -2,7 +2,7 @@ const SUPABASE_URL="https://inavmauzukbqjsekquxw.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_il1W1s6uNwgcFwGAs4HFHw_AuB-hiaS";
 
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v8";
+const STORAGE_KEY="family-recipe-supabase-cache-v9";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -23,10 +23,10 @@ const sampleFridge=[
 ];
 
 const DIRECTORY_HERO={
-  recipes:{badge:"菜谱目录",title:"今天想做哪道菜？",text:"这里集中管理所有家庭菜单，点击菜谱进入备菜检查。",image:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"},
-  prep:{badge:"备菜目录",title:"把缺少的食材一次检查清楚",text:"按菜谱核对已有数量，缺少项会自动同步到购物车。",image:"https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80"},
-  cart:{badge:"购物车目录",title:"购物车里装满食材，采购更直观",text:"同名食材会自动合并，像装满食材的购物车一样一目了然。",image:"https://images.unsplash.com/photo-1542838132-c7b4f7a29710?auto=format&fit=crop&w=1200&q=80"},
-  fridge:{badge:"冰箱目录",title:"家里常备食材，一眼看清",text:"管理牛奶、鸡蛋、水果等常用食材，需要补货时直接进购物车。",image:"https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1200&q=80"}
+  recipes:{badge:"菜谱目录",title:"今天想做哪道菜？",text:"这里集中管理所有家庭菜单，点击菜谱进入备菜检查。",image:"hero-recipes.jpg"},
+  prep:{badge:"备菜目录",title:"把缺少的食材一次检查清楚",text:"按菜谱核对已有数量，缺少项会自动同步到购物车。",image:"hero-prep.jpg"},
+  cart:{badge:"购物车目录",title:"购物车里装满食材，采购更直观",text:"同名食材会自动合并，像装满食材的购物车一样一目了然。",image:"hero-cart.jpg"},
+  fridge:{badge:"冰箱目录",title:"家里常备食材，一眼看清",text:"管理牛奶、鸡蛋、水果等常用食材，需要补货时直接进购物车。",image:"hero-fridge.jpg"}
 };
 
 let state=normalize(null);
