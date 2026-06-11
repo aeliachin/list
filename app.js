@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v13";
+const STORAGE_KEY="family-recipe-supabase-cache-v14";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -51,6 +51,25 @@ function toast(msg){const el=$("#toast");if(!el)return;el.textContent=msg;el.cla
 function setLoginMsg(msg){const el=$("#loginMsg");if(el)el.textContent=msg}
 function appendLoginMsg(msg){const el=$("#loginMsg");if(el)el.textContent=(el.textContent?el.textContent+"｜":"")+msg}
 function setHero(tab){const d=DIRECTORY_HERO[tab]||DIRECTORY_HERO.recipes;$("#heroBadge").textContent=d.badge;$("#heroTitle").textContent=d.title;$("#heroText").textContent=d.text;$("#heroPicture").style.backgroundImage=`url('${d.image}')`}
+
+function ensureCategoryDropdown(){
+  const field=document.getElementById("categoryField");
+  if(!field)return;
+  if(field.tagName==="SELECT")return;
+  const current=normalizeCategory(field.value||"热菜");
+  const select=document.createElement("select");
+  select.id="categoryField";
+  select.required=true;
+  ["热菜","凉菜","其他"].forEach(value=>{
+    const option=document.createElement("option");
+    option.value=value;
+    option.textContent=value;
+    select.appendChild(option);
+  });
+  select.value=current;
+  field.replaceWith(select);
+}
+
 
 function ensureSupabaseClient(){
   if(supabaseClient)return supabaseClient;
@@ -204,14 +223,14 @@ function setFridgeHave(id,v){const i=state.fridge.find(x=>x.id===id);if(!i)retur
 function addFridgeItem(){const input=$("#fridgeNameField"),name=input.value.trim();if(!name){toast("请输入食材名称");return}state.fridge.unshift({id:uid(),name,needQty:1,unit:"份",haveQty:0,inCart:false});input.value="";render();toast("已加入冰箱")}
 function editFridgeTarget(id){const i=state.fridge.find(x=>x.id===id);if(!i)return;const q=prompt(`目标常备数量：${i.name}`,i.needQty);if(q===null)return;const u=prompt(`单位：${i.name}`,i.unit||"份");i.needQty=num(q)||1;i.unit=(u||i.unit||"份").trim();i.inCart=buyQty(i)>0;render();toast("目标数量已更新")}
 function switchTab(tab){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));setHero(tab);window.scrollTo({top:0,behavior:"smooth"})}
-function openEditor(id=null){editingId=id;const r=state.recipes.find(x=>x.id===id);$("#dialogTitle").textContent=r?"编辑菜谱":"添加菜谱";$("#nameField").value=r?.name||"";$("#categoryField").value=normalizeCategory(r?.category||"热菜");$("#servingsField").value=r?.servings||"";$("#timeField").value=r?.time||"";$("#ingredientsField").value=r?.ingredients?.map(i=>`${i.name} | ${i.needQty} | ${i.unit}`).join("\n")||"";$("#stepsField").value=r?.steps||"";$("#recipeDialog").showModal()}
+function openEditor(id=null){ensureCategoryDropdown();editingId=id;const r=state.recipes.find(x=>x.id===id);$("#dialogTitle").textContent=r?"编辑菜谱":"添加菜谱";$("#nameField").value=r?.name||"";$("#categoryField").value=normalizeCategory(r?.category||"热菜");$("#servingsField").value=r?.servings||"";$("#timeField").value=r?.time||"";$("#ingredientsField").value=r?.ingredients?.map(i=>`${i.name} | ${i.needQty} | ${i.unit}`).join("\n")||"";$("#stepsField").value=r?.steps||"";$("#recipeDialog").showModal()}
 function parseIngredients(text,old=[]){return text.split("\n").map(x=>x.trim()).filter(Boolean).map(line=>{const [n="",q="",u=""]=line.split("|");const name=n.trim(),oldItem=old.find(i=>i.name===name),need=num(q.trim());return{id:oldItem?.id||uid(),name,needQty:need,unit:u.trim(),haveQty:Math.min(oldItem?.haveQty||0,need),amount:fmt(need,u.trim())}}).filter(i=>i.name)}
 function handleSubmit(e){e.preventDefault();const old=state.recipes.find(r=>r.id===editingId);const recipe={id:old?.id||uid(),name:$("#nameField").value.trim(),category:normalizeCategory($("#categoryField").value),servings:$("#servingsField").value.trim(),time:$("#timeField").value.trim(),image:"",ingredients:parseIngredients($("#ingredientsField").value,old?.ingredients||[]),steps:$("#stepsField").value.trim()};if(!recipe.name||!recipe.ingredients.length){toast("请填写菜名和用料");return}if(old)state.recipes[state.recipes.findIndex(x=>x.id===editingId)]=recipe;else state.recipes.unshift(recipe);currentRecipeId=recipe.id;$("#recipeDialog").close();render();toast("菜单已保存")}
 function deleteRecipe(id){const recipe=state.recipes.find(r=>r.id===id);if(!recipe)return;if(!confirm(`确定删除菜谱“${recipe.name}”吗？`))return;state.recipes=state.recipes.filter(r=>r.id!==id);if(expandedRecipeId===id)expandedRecipeId=null;currentRecipeId=state.recipes[0]?.id||null;switchTab("recipes");render();toast("菜谱已删除")}
 async function shareShoppingList(){const {groups}=collectCartGroups();if(!groups.length){toast("没有待采购内容");return}const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");if(navigator.share){try{await navigator.share({title:"待采购清单",text});toast("已打开分享菜单")}catch(e){if(e.name!=="AbortError")copyText(text)}}else copyText(text)}
 async function copyText(text){try{await navigator.clipboard.writeText(text)}catch{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}toast("待采购清单已复制，可以粘贴发送")}
 
-function bindUI(){document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter})}
+function bindUI(){ensureCategoryDropdown();document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter})}
 
 bindUI();
 initAuth();

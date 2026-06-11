@@ -220,3 +220,18 @@ select{
 
 
 /* v13: safe update package */
+
+
+/* v14: 分类下拉强制修复 */
+select#categoryField{
+  width:100%!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:17px!important;
+  padding:13px 14px!important;
+  background:var(--soft)!important;
+  font:inherit!important;
+  font-weight:750!important;
+  color:var(--ink)!important;
+  appearance:auto!important;
+}
