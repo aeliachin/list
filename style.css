@@ -77,3 +77,10 @@
     grid-template-columns:repeat(2,1fr);
   }
 }
+
+
+/* v17: visible version check */
+.version-pill{
+  background:#162045!important;
+  color:#fff!important;
+}
