@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v22c";
+const STORAGE_KEY="family-recipe-supabase-cache-v22d";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -430,10 +430,34 @@ function addManualCartItem(){
   toast("已添加到购物车");
 }
 
+
+function normalizeShareName(name){
+  return String(name||"").trim().replace(/\s+/g," ").toLowerCase();
+}
+function mergedShoppingShareGroups(){
+  const {raw}=collectCartGroups();
+  const map=new Map();
+  raw.forEach(x=>{
+    const name=String(x.name||"").trim();
+    const unit=String(x.unit||"").trim();
+    const qty=num(x.qty);
+    if(!name||qty<=0)return;
+    const key=`${normalizeShareName(name)}__${unit.toLowerCase()}`;
+    if(!map.has(key))map.set(key,{name,unit,total:0,sources:new Set()});
+    const g=map.get(key);
+    g.total+=qty;
+    if(x.source)g.sources.add(String(x.source).trim());
+  });
+  return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name,"zh-Hans-CN",{numeric:true,sensitivity:"base"}));
+}
+
 async function shareShoppingList(){
-  const {groups}=collectCartGroups();
+  const groups=mergedShoppingShareGroups();
   if(!groups.length){toast("没有待采购内容");return}
-  const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");
+  const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>{
+    const sourceText=[...g.sources].filter(Boolean).join("、");
+    return `${n+1}. ${g.name} - ${fmt(g.total,g.unit)}${sourceText?`（${sourceText}）`:""}`;
+  }).join("\n");
   const copied=await copyText(text);
   if(copied)toast("清单已复制，可直接去微信粘贴发送");
   if(navigator.share){
