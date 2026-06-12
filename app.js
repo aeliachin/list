@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v18";
+const STORAGE_KEY="family-recipe-supabase-cache-v19";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -130,7 +130,25 @@ async function enterApp(user){
   window.scrollTo({top:0,behavior:"auto"});
 }
 async function handleLogin(e){e.preventDefault();const email=$("#loginEmail").value.trim();const password=$("#loginPassword").value;const btn=$("#loginBtn");if(!email||!password){setLoginMsg("请填写邮箱和密码");return}btn.disabled=true;setLoginMsg("1/3 正在检查 Supabase 配置...");try{const client=ensureSupabaseClient();appendLoginMsg("2/3 正在登录...");const {data,error}=await withTimeout(client.auth.signInWithPassword({email,password}),LOGIN_TIMEOUT_MS,"登录超时：请检查网络、Supabase URL/key 或 Auth 设置");if(error)throw error;const user=data?.user||data?.session?.user;if(!user)throw new Error("登录成功但没有返回用户信息。");appendLoginMsg("3/3 登录成功，正在进入...");await enterApp(user)}catch(err){console.error(err);setLoginMsg("登录失败："+(err.message||"账号或密码不正确"))}finally{btn.disabled=false}}
-async function handleLogout(){clearTimeout(saveTimer);await saveRemoteNow();if(supabaseClient)await supabaseClient.auth.signOut();showAuth("已退出登录")}
+async function handleLogout(){
+  clearTimeout(saveTimer);
+  try{
+    await saveRemoteNow();
+  }catch(e){
+    console.warn("退出前云端同步失败，继续本机退出",e);
+  }
+  try{
+    if(supabaseClient){
+      const {error}=await supabaseClient.auth.signOut({scope:"local"});
+      if(error)console.warn("Supabase 本机退出提示",error);
+    }
+  }catch(e){
+    console.warn("Supabase 退出失败，仍切回登录页",e);
+  }
+  currentUser=null;
+  showAuth("已退出登录");
+  toast("已退出登录");
+}
 async function initAuth(){try{setHero("fridge");const client=ensureSupabaseClient();const {data,error}=await client.auth.getSession();if(error)throw error;if(data.session?.user)await enterApp(data.session.user);else showAuth();client.auth.onAuthStateChange((_event,session)=>{if(!session?.user&&currentUser)showAuth("登录状态已失效，请重新登录")})}catch(err){console.error(err);showAuth("初始化失败："+(err.message||""))}}
 
 function render(){renderRecipes();renderPrep();renderCart();renderFridge();save()}
