@@ -108,3 +108,106 @@
   background:#162045!important;
   color:#fff!important;
 }
+
+
+/* v20: 界面清理与手机端菜谱列表修复 */
+.version-pill{
+  display:none!important;
+}
+.directory-hero{
+  display:grid!important;
+  grid-template-columns:1.15fr .85fr;
+  align-items:center;
+}
+.hero-picture{
+  display:block!important;
+  min-height:170px!important;
+  background-size:cover!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+}
+.recipe-subtabs,
+.fridge-subtabs{
+  width:100%;
+}
+.recipe-list{
+  display:grid!important;
+  gap:12px!important;
+}
+.recipe-card{
+  display:block!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:rgba(255,255,255,.94)!important;
+}
+.recipe-title-row{
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  gap:10px!important;
+  align-items:center!important;
+  border:0!important;
+  text-align:left!important;
+  padding:16px 17px!important;
+  background:rgba(255,255,255,.94)!important;
+  color:var(--ink)!important;
+  text-decoration:none!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+.recipe-title-row span{
+  color:inherit;
+}
+.recipe-title-name{
+  display:block!important;
+  min-width:0!important;
+  font-size:20px!important;
+  font-weight:950!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.recipe-type-badge{
+  display:inline-grid!important;
+  place-items:center!important;
+  padding:6px 10px!important;
+  border-radius:999px!important;
+  background:#ffd9e5!important;
+  color:#b53a69!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+.recipe-chevron{
+  width:28px!important;
+  height:28px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:50%!important;
+  background:var(--soft)!important;
+  color:var(--muted)!important;
+  font-weight:950!important;
+}
+@media(max-width:880px){
+  .directory-hero{
+    grid-template-columns:1fr!important;
+  }
+  .hero-picture{
+    width:100%!important;
+    height:180px!important;
+    order:-1;
+  }
+}
+@media(max-width:520px){
+  .recipe-title-row{
+    padding:14px 12px!important;
+    grid-template-columns:minmax(0,1fr) auto auto!important;
+  }
+  .recipe-title-name{
+    font-size:18px!important;
+  }
+  .recipe-type-badge{
+    font-size:12px!important;
+    padding:5px 8px!important;
+  }
+}

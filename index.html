@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="stylesheet" href="style.css?v=19">
+<link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 <section class="auth-screen" id="authScreen">
@@ -21,7 +21,7 @@
       <img src="icon-192.png" alt="家庭食谱图标" class="auth-logo">
       <div>
         <h1>家庭食谱</h1>
-        <p>家庭菜单、备菜清单、购物车同步</p><div class="login-version">v19 退出修复版</div>
+        <p>家庭菜单、备菜清单、购物车同步</p><div class="login-version">v20 界面修复版</div>
       </div>
     </div>
     <form id="loginForm" class="auth-form">
@@ -37,11 +37,11 @@
 <main class="app" id="appMain" hidden>
   <header class="app-header">
     <div>
-      <div class="app-kicker">共享家庭菜单 · v19</div>
+      <div class="app-kicker">共享家庭菜单 · v20</div>
       <h1>家庭食谱</h1>
       <p>菜谱、备菜与购物清单</p>
     </div>
-    <div class="top-actions"><span class="pill version-pill">v19 新版</span>
+    <div class="top-actions">
       <span class="pill sync" id="syncStatus">未登录</span>
       <span class="pill sync email-pill" id="accountEmail"></span>
       <button class="pill danger" id="logoutBtn">退出</button>
@@ -58,7 +58,7 @@
   </section>
 
   <section class="toolbar">
-    <div class="search"><span>🔎</span><input id="searchInput" placeholder="搜索菜谱、食材、分类..."></div>
+    <div class="search"><span>🔎</span><input id="searchInput" placeholder="搜索菜谱、食材..."></div>
     <nav class="tabs" aria-label="主导航">
       <button class="tab active" data-tab="fridge">冰箱</button>
       <button class="tab" data-tab="cart">购物车</button>
@@ -69,7 +69,7 @@
   </section>
 
   <section id="recipes" class="view">
-    <div class="head"><h2>菜谱 / 菜单</h2><small id="recipeCount"></small></div>
+    <div class="head"><h2>菜谱</h2><small id="recipeCount"></small></div>
     <div class="recipe-subtabs" id="recipeSubtabs">
       <button class="subtab active" data-recipe-type="全部">全部</button>
       <button class="subtab" data-recipe-type="热菜">热菜</button>
@@ -154,7 +154,7 @@
 
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=19"></script>
-<script src="app.js?v=19"></script>
+<script src="config.js?v=20"></script>
+<script src="app.js?v=20"></script>
 </body>
 </html>
