@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v17";
+const STORAGE_KEY="family-recipe-supabase-cache-v18";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -28,6 +28,7 @@ const DIRECTORY_HERO={
   fridge:{badge:"冰箱目录",title:"家里常备食材，一眼看清",text:"管理牛奶、鸡蛋、水果等常用食材，需要补货时直接进购物车。",image:"hero-fridge.jpg"}
 };
 
+const FRIDGE_CATEGORIES=["肉蛋奶","蔬果","干粮","零食"];
 let state=normalize(null);
 let currentRecipeId=null;
 let editingId=null;
@@ -37,7 +38,6 @@ let saveTimer=null;
 let recipeTypeFilter="全部";
 let expandedRecipeId=null;
 let fridgeCategoryFilter="全部";
-const FRIDGE_CATEGORIES=["肉蛋奶","蔬果","干粮","零食"];
 
 function num(v){const n=Number(v);return Number.isFinite(n)&&n>=0?n:0}
 function fmt(q,u=""){const n=num(q);const t=Number.isInteger(n)?String(n):String(n).replace(/\.0+$/,'').replace(/(\.\d*[1-9])0+$/,'$1');return `${t}${u?" "+u:""}`.trim()}

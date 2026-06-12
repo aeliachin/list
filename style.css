@@ -84,3 +84,20 @@
   background:#162045!important;
   color:#fff!important;
 }
+
+
+/* v18: login visible version marker */
+.login-version{
+  display:inline-block;
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#162045;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+.version-pill{
+  background:#162045!important;
+  color:#fff!important;
+}
