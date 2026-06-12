@@ -471,3 +471,73 @@ select#fridgeCategoryField,
 .qtybox .danger-mini{
   margin-top:2px;
 }
+
+
+/* v22f: 冰箱数量/单位/改目标/删除布局 */
+.fridge-actions-box{
+  display:grid!important;
+  gap:8px!important;
+  align-content:center!important;
+  min-width:0!important;
+}
+.fridge-action-row{
+  display:grid!important;
+  grid-template-columns:minmax(64px,96px) auto minmax(96px,120px)!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+.fridge-qty{
+  width:96px!important;
+  max-width:96px!important;
+  min-width:64px!important;
+}
+.fridge-unit{
+  justify-self:start!important;
+  min-width:36px!important;
+  text-align:center!important;
+}
+.fridge-goal-btn,
+.fridge-delete-btn{
+  width:120px!important;
+  max-width:120px!important;
+  min-height:44px!important;
+  justify-self:end!important;
+}
+.fridge-delete-btn{
+  grid-column:3/4!important;
+}
+@media(max-width:760px){
+  .item>.fridge-actions-box{
+    grid-column:2/-1!important;
+  }
+  .fridge-action-row{
+    grid-template-columns:minmax(70px,92px) auto minmax(92px,112px)!important;
+    gap:8px!important;
+  }
+  .fridge-qty{
+    width:92px!important;
+    max-width:92px!important;
+  }
+  .fridge-goal-btn,
+  .fridge-delete-btn{
+    width:112px!important;
+    max-width:112px!important;
+  }
+}
+@media(max-width:420px){
+  .fridge-action-row{
+    grid-template-columns:72px 34px 96px!important;
+    gap:7px!important;
+  }
+  .fridge-qty{
+    width:72px!important;
+    max-width:72px!important;
+    padding-left:12px!important;
+    padding-right:8px!important;
+  }
+  .fridge-goal-btn,
+  .fridge-delete-btn{
+    width:96px!important;
+    max-width:96px!important;
+  }
+}

@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v22e";
+const STORAGE_KEY="family-recipe-supabase-cache-v22f";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -366,8 +366,8 @@ function renderFridge(){
       <div class="qtybox fridge-tools">
         <label class="mini-label"><span>分类</span><select class="fridge-item-category" onchange="setFridgeCategory('${i.id}',this.value)">${categoryOptions(cat)}</select></label>
         <div class="small fridge-desc">当前已有数量</div>
-        <div class="qtyline"><input class="qty fridge-qty" type="number" min="0" step="0.1" value="${i.haveQty}" onchange="setFridgeHave('${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div>
-        <button class="mini" onclick="editFridgeTarget('${i.id}')">改目标</button><button class="mini danger-mini" onclick="deleteFridgeItem('${i.id}')">删除</button>
+        <div class="fridge-action-row"><input class="qty fridge-qty" type="number" min="0" step="0.1" value="${i.haveQty}" onchange="setFridgeHave('${i.id}',this.value)"><span class="badge fridge-unit">${esc(i.unit||"数量")}</span><button class="mini fridge-goal-btn" onclick="editFridgeTarget('${i.id}')">改目标</button></div>
+        <button class="mini danger-mini fridge-delete-btn" onclick="deleteFridgeItem('${i.id}')">删除</button>
       </div>
     </div>`;
   }).join("");
@@ -404,7 +404,7 @@ function editFridgeTarget(id){
 function deleteFridgeItem(id){
   const item=state.fridge.find(x=>x.id===id);
   if(!item)return;
-  if(!confirm(`确定从冰箱删除“${item.name}”吗？`))return;
+  if(!confirm(`确定要删除“${item.name}”吗？删除后无法从冰箱中恢复。`))return;
   state.fridge=state.fridge.filter(x=>x.id!==id);
   render();
   toast("已从冰箱删除");
