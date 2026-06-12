@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v21";
+const STORAGE_KEY="family-recipe-supabase-cache-v22";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -311,10 +311,21 @@ function renderCart(){
     </div>`;
   }).join("")}</div></div>`;
 }
+function ensureFridgeCategoryData(){
+  state.fridge=(state.fridge||[]).map(item=>{
+    const normalized=normFridge(item);
+    return {
+      ...normalized,
+      category:normalizeFridgeCategory(item.category, normalized.name)
+    };
+  });
+}
 function filteredFridge(){
-  let list=[...(state.fridge||[])].map(normFridge);
-  state.fridge=list;
-  if(fridgeCategoryFilter!=="全部")list=list.filter(i=>normalizeFridgeCategory(i.category,i.name)===fridgeCategoryFilter);
+  ensureFridgeCategoryData();
+  let list=[...(state.fridge||[])];
+  if(fridgeCategoryFilter!=="全部"){
+    list=list.filter(i=>normalizeFridgeCategory(i.category,i.name)===fridgeCategoryFilter);
+  }
   return list.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"zh-Hans-CN",{numeric:true,sensitivity:"base"}));
 }
 function setFridgeCategoryFilter(category){
@@ -324,6 +335,14 @@ function setFridgeCategoryFilter(category){
 }
 function categoryOptions(selected){
   return FRIDGE_CATEGORIES.map(c=>`<option value="${c}" ${c===selected?"selected":""}>${c}</option>`).join("");
+}
+function setFridgeCategory(id,value){
+  const item=(state.fridge||[]).find(x=>x.id===id);
+  if(!item){toast("没有找到这个冰箱物品");return}
+  item.category=normalizeFridgeCategory(value,item.name);
+  // 修改分类后保持当前页面不跳走；如果当前正在某个分类里，物品会自动移出当前分类。
+  render();
+  toast(`已改为：${item.category}`);
 }
 function renderFridge(){
   const list=filteredFridge();
@@ -349,8 +368,33 @@ function renderFridge(){
   $("#fridgeList").innerHTML=html?`<div class="panel"><div class="list fridge-list">${html}</div></div>`:`<div class="empty">这个分类里还没有食材。</div>`;
 }
 
-function addFridgeItem(){const input=$("#fridgeNameField"),name=input.value.trim();if(!name){toast("请输入食材名称");return}state.fridge.unshift({id:uid(),name,needQty:1,unit:"份",haveQty:0,inCart:false});input.value="";render();toast("已加入冰箱")}
-function editFridgeTarget(id){const i=state.fridge.find(x=>x.id===id);if(!i)return;const q=prompt(`目标常备数量：${i.name}`,i.needQty);if(q===null)return;const u=prompt(`单位：${i.name}`,i.unit||"份");i.needQty=num(q)||1;i.unit=(u||i.unit||"份").trim();i.inCart=buyQty(i)>0;render();toast("目标数量已更新")}
+function addFridgeItem(){
+  const input=$("#fridgeNameField");
+  const name=input.value.trim();
+  if(!name){toast("请输入食材名称");return}
+  const category=normalizeFridgeCategory($("#fridgeCategoryField")?.value,name);
+  state.fridge.unshift({id:uid(),name,needQty:1,unit:"份",haveQty:0,category,inCart:false});
+  input.value="";
+  render();
+  toast("已加入冰箱");
+}
+function editFridgeTarget(id){
+  const i=state.fridge.find(x=>x.id===id);
+  if(!i)return;
+  const q=prompt(`目标常备数量：${i.name}`,i.needQty);
+  if(q===null)return;
+  const u=prompt(`单位：${i.name}`,i.unit||"份");
+  if(u===null)return;
+  const c=prompt(`分类：肉蛋奶 / 蔬果 / 干粮 / 零食`,normalizeFridgeCategory(i.category,i.name));
+  if(c===null)return;
+  i.needQty=num(q)||1;
+  i.unit=(u||i.unit||"份").trim();
+  i.category=normalizeFridgeCategory(c,i.name);
+  i.inCart=buyQty(i)>0;
+  render();
+  toast("目标和分类已更新");
+}
+
 function switchTab(tab){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));
