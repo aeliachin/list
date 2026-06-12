@@ -213,237 +213,33 @@
 }
 
 
-/* v21: 只在菜谱页显示 +菜谱 */
-.add-btn[hidden]{
+/* v23: 冰箱删除 + 去掉目录说明文字 */
+.app-header p,
+#heroText{
   display:none!important;
 }
-
-/* v21: 主目录字号放大，但保持一行 */
-.tabs{
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+.hero-copy p{
+  display:none!important;
 }
-.tab{
-  font-size:18px!important;
-  font-weight:950!important;
-  min-width:0!important;
-  white-space:nowrap!important;
-  padding-left:4px!important;
-  padding-right:4px!important;
+.directory-hero{
+  gap:18px!important;
 }
-
-/* v21: 菜谱分类子目录恢复整体圆角胶囊风格 */
-.recipe-subtabs{
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:8px!important;
-  padding:8px!important;
-  margin:0 0 16px!important;
-  border-radius:26px!important;
-  background:rgba(255,255,255,.94)!important;
-  box-shadow:0 14px 32px rgba(22,32,69,.08)!important;
-  border:1px solid var(--border)!important;
-  overflow:hidden!important;
+.danger-mini{
+  background:#fff3f6!important;
+  color:#c3456e!important;
+  border:1px solid rgba(195,69,110,.14)!important;
 }
-.recipe-subtabs .subtab{
-  min-height:46px!important;
-  border-radius:18px!important;
-  background:transparent!important;
-  color:var(--muted)!important;
-  font-size:17px!important;
-  font-weight:950!important;
-  border:0!important;
-  display:grid!important;
-  place-items:center!important;
-  white-space:nowrap!important;
+.qtybox{
+  align-content:center;
 }
-.recipe-subtabs .subtab.active{
-  background:var(--cream)!important;
-  color:var(--ink)!important;
-  box-shadow:inset 0 -2px 0 rgba(22,32,69,.06)!important;
+.qtybox .danger-mini{
+  margin-top:2px;
 }
-
-/* v21: 冰箱分类固定一行，推荐用更窄的五等分胶囊 */
-.fridge-subtabs{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:5px!important;
-  padding:6px!important;
-  margin:0 0 14px!important;
-  border-radius:24px!important;
-  background:rgba(255,255,255,.94)!important;
-  box-shadow:0 14px 32px rgba(22,32,69,.08)!important;
-  border:1px solid var(--border)!important;
-  overflow:hidden!important;
-}
-.fridge-subtab{
-  min-width:0!important;
-  min-height:42px!important;
-  border-radius:16px!important;
-  background:transparent!important;
-  color:var(--muted)!important;
-  font-size:14px!important;
-  font-weight:950!important;
-  padding:0 2px!important;
-  display:grid!important;
-  place-items:center!important;
-  white-space:nowrap!important;
-  border:0!important;
-}
-.fridge-subtab.active{
-  background:var(--cream)!important;
-  color:var(--ink)!important;
-  box-shadow:inset 0 -2px 0 rgba(22,32,69,.06)!important;
-}
-
-/* v21: 冰箱新增区域，添加按钮靠右，分类下拉符合整体风格 */
-.fridge-add{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) minmax(116px,150px) 96px!important;
-  gap:10px!important;
-  align-items:end!important;
-}
-.fridge-add .btn{
-  justify-self:end!important;
-  width:96px!important;
-}
-select,
-select#categoryField,
-select#fridgeCategoryField,
-.fridge-item-category{
-  width:100%!important;
-  border:0!important;
-  outline:0!important;
-  border-radius:17px!important;
-  padding:13px 38px 13px 14px!important;
-  background:var(--soft)!important;
-  font:inherit!important;
-  font-weight:850!important;
-  color:var(--ink)!important;
-  appearance:none!important;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%)!important;
-  background-position:
-    calc(100% - 20px) 50%,
-    calc(100% - 14px) 50%!important;
-  background-size:6px 6px,6px 6px!important;
-  background-repeat:no-repeat!important;
-}
-
-/* v21: 冰箱已有物品字体放大，并支持直接改分类 */
-.fridge-item{
-  grid-template-columns:auto minmax(0,1fr) minmax(150px,190px)!important;
-  gap:14px!important;
-  align-items:center!important;
-  padding:14px!important;
-}
-.fridge-name{
-  font-size:22px!important;
-  line-height:1.25!important;
-  font-weight:950!important;
-}
-.fridge-desc{
-  font-size:15.5px!important;
-  line-height:1.55!important;
-}
-.fridge-tools{
-  min-width:0!important;
-}
-.mini-label span{
-  display:block;
-  margin:0 0 5px 4px;
-  color:var(--muted);
-  font-size:13px;
-  font-weight:900;
-}
-.fridge-item-category{
-  min-height:42px!important;
-  padding-top:9px!important;
-  padding-bottom:9px!important;
-  border-radius:15px!important;
-}
-.fridge-qty{
-  font-size:16px!important;
-  min-height:42px!important;
-}
-
-/* v21: 手机端微调，保证一行放下 */
 @media(max-width:760px){
-  .tab{
-    font-size:17px!important;
-    min-height:46px!important;
+  .item>.qtybox{
+    grid-column:2/-1;
   }
-  .recipe-subtabs{
-    gap:6px!important;
-    padding:6px!important;
+  .qtybox{
+    width:100%;
   }
-  .recipe-subtabs .subtab{
-    font-size:16px!important;
-    min-height:42px!important;
-  }
-  .fridge-subtabs{
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    gap:4px!important;
-    padding:5px!important;
-  }
-  .fridge-subtab{
-    font-size:13.5px!important;
-    min-height:40px!important;
-  }
-  .fridge-add{
-    grid-template-columns:minmax(0,1fr) 96px!important;
-  }
-  .fridge-add label:first-child{
-    grid-column:1/-1!important;
-  }
-  .fridge-add .btn{
-    width:96px!important;
-  }
-  .fridge-item{
-    grid-template-columns:auto minmax(0,1fr)!important;
-    align-items:start!important;
-  }
-  .fridge-tools{
-    grid-column:2/-1!important;
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) minmax(90px,110px)!important;
-    gap:8px!important;
-    align-items:end!important;
-  }
-  .fridge-tools .mini-label{
-    grid-column:1/-1!important;
-  }
-  .fridge-tools .fridge-desc{
-    display:none!important;
-  }
-  .fridge-tools .qtyline{
-    min-width:0!important;
-  }
-  .fridge-tools .mini{
-    min-height:42px!important;
-  }
-  .fridge-name{
-    font-size:21px!important;
-  }
-  .fridge-desc{
-    font-size:15px!important;
-  }
-}
-@media(max-width:420px){
-  .tab{
-    font-size:16px!important;
-  }
-  .fridge-subtab{
-    font-size:13px!important;
-    letter-spacing:-.2px;
-  }
-  .recipe-subtabs .subtab{
-    font-size:15.5px!important;
-  }
-}
-
-
-/* v22: 冰箱分类修改修复标记 */
-.fridge-item-category{
-  border:2px solid rgba(120,214,207,.22)!important;
 }

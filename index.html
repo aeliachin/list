@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="stylesheet" href="style.css?v=22">
+<link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 <section class="auth-screen" id="authScreen">
@@ -21,7 +21,7 @@
       <img src="icon-192.png" alt="家庭食谱图标" class="auth-logo">
       <div>
         <h1>家庭食谱</h1>
-        <p>家庭菜单、备菜清单、购物车同步</p><div class="login-version">v22 分类修复版</div>
+        <p>家庭菜单、备菜清单、购物车同步</p><div class="login-version">v23 冰箱删除版</div>
       </div>
     </div>
     <form id="loginForm" class="auth-form">
@@ -37,9 +37,9 @@
 <main class="app" id="appMain" hidden>
   <header class="app-header">
     <div>
-      <div class="app-kicker">共享家庭菜单 · v22</div>
+      <div class="app-kicker">共享家庭菜单 · v23</div>
       <h1>家庭食谱</h1>
-      <p>菜谱、备菜与购物清单</p>
+      
     </div>
     <div class="top-actions">
       <span class="pill sync" id="syncStatus">未登录</span>
@@ -52,7 +52,6 @@
     <div class="hero-copy">
       <span class="hero-badge" id="heroBadge">冰箱目录</span>
       <h2 id="heroTitle">家里常备食材，一眼看清</h2>
-      <p id="heroText">管理牛奶、鸡蛋、水果等常用食材，需要补货时直接进购物车。</p>
     </div>
     <div class="hero-picture" id="heroPicture"></div>
   </section>
@@ -65,7 +64,7 @@
       <button class="tab" data-tab="recipes">菜谱</button>
       <button class="tab" data-tab="prep">备菜</button>
     </nav>
-    <button class="pill primary add-btn" id="addRecipeBtn" hidden>＋ 菜谱</button>
+    <button class="pill primary add-btn" id="addRecipeBtn">＋ 菜谱</button>
   </section>
 
   <section id="recipes" class="view">
@@ -154,7 +153,7 @@
 
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=22"></script>
-<script src="app.js?v=22"></script>
+<script src="config.js?v=23"></script>
+<script src="app.js?v=23"></script>
 </body>
 </html>
