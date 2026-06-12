@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v22d";
+const STORAGE_KEY="family-recipe-supabase-cache-v22e";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -367,7 +367,7 @@ function renderFridge(){
         <label class="mini-label"><span>分类</span><select class="fridge-item-category" onchange="setFridgeCategory('${i.id}',this.value)">${categoryOptions(cat)}</select></label>
         <div class="small fridge-desc">当前已有数量</div>
         <div class="qtyline"><input class="qty fridge-qty" type="number" min="0" step="0.1" value="${i.haveQty}" onchange="setFridgeHave('${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div>
-        <button class="mini" onclick="editFridgeTarget('${i.id}')">改目标</button>
+        <button class="mini" onclick="editFridgeTarget('${i.id}')">改目标</button><button class="mini danger-mini" onclick="deleteFridgeItem('${i.id}')">删除</button>
       </div>
     </div>`;
   }).join("");
@@ -401,6 +401,14 @@ function editFridgeTarget(id){
   toast("目标和分类已更新");
 }
 
+function deleteFridgeItem(id){
+  const item=state.fridge.find(x=>x.id===id);
+  if(!item)return;
+  if(!confirm(`确定从冰箱删除“${item.name}”吗？`))return;
+  state.fridge=state.fridge.filter(x=>x.id!==id);
+  render();
+  toast("已从冰箱删除");
+}
 function switchTab(tab){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));
@@ -495,7 +503,7 @@ async function copyText(text){
 }
 
 
-function bindUI(){ensureCategoryDropdown();const addBtn=$("#addRecipeBtn");if(addBtn)addBtn.hidden=true;document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));document.querySelectorAll(".fridge-subtab").forEach(b=>b.addEventListener("click",()=>setFridgeCategoryFilter(b.dataset.fridgeCategory)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter,addManualCartItem,transferCartToFridge,setFridgeCategoryFilter,setFridgeCategory})}
+function bindUI(){ensureCategoryDropdown();const addBtn=$("#addRecipeBtn");if(addBtn)addBtn.hidden=true;document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));document.querySelectorAll(".fridge-subtab").forEach(b=>b.addEventListener("click",()=>setFridgeCategoryFilter(b.dataset.fridgeCategory)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter,addManualCartItem,transferCartToFridge,setFridgeCategoryFilter,setFridgeCategory,deleteFridgeItem})}
 
 bindUI();
 initAuth();

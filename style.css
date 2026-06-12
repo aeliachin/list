@@ -460,3 +460,14 @@ select#fridgeCategoryField,
 
 
 /* v22d: 分享清单时强制合并相同名称和单位 */
+
+
+/* v22e: 冰箱删除按钮 */
+.danger-mini{
+  background:#fff3f6!important;
+  color:#c3456e!important;
+  border:1px solid rgba(195,69,110,.14)!important;
+}
+.qtybox .danger-mini{
+  margin-top:2px;
+}
