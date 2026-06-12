@@ -1,6 +1,6 @@
 {
-  "name": "家庭食谱",
-  "short_name": "家庭食谱",
+  "name": "猫狗菜谱",
+  "short_name": "猫狗菜谱",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
