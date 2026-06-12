@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v22b";
+const STORAGE_KEY="family-recipe-supabase-cache-v22c";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -430,8 +430,46 @@ function addManualCartItem(){
   toast("已添加到购物车");
 }
 
-async function shareShoppingList(){const {groups}=collectCartGroups();if(!groups.length){toast("没有待采购内容");return}const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");if(navigator.share){try{await navigator.share({title:"待采购清单",text});toast("已打开分享菜单")}catch(e){if(e.name!=="AbortError")copyText(text)}}else copyText(text)}
-async function copyText(text){try{await navigator.clipboard.writeText(text)}catch{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}toast("待采购清单已复制，可以粘贴发送")}
+async function shareShoppingList(){
+  const {groups}=collectCartGroups();
+  if(!groups.length){toast("没有待采购内容");return}
+  const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");
+  const copied=await copyText(text);
+  if(copied)toast("清单已复制，可直接去微信粘贴发送");
+  if(navigator.share){
+    try{
+      await navigator.share({text});
+      toast("已打开分享菜单");
+    }catch(e){
+      if(e.name==="AbortError")return;
+      toast("微信可能不支持直接分享，清单已复制，请粘贴发送");
+    }
+  }else{
+    toast(copied?"清单已复制，请粘贴发送":"无法自动分享，请手动复制");
+  }
+}
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch{
+    try{
+      const t=document.createElement("textarea");
+      t.value=text;
+      t.setAttribute("readonly","");
+      t.style.position="fixed";
+      t.style.left="-9999px";
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand("copy");
+      t.remove();
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+}
+
 
 function bindUI(){ensureCategoryDropdown();const addBtn=$("#addRecipeBtn");if(addBtn)addBtn.hidden=true;document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));document.querySelectorAll(".fridge-subtab").forEach(b=>b.addEventListener("click",()=>setFridgeCategoryFilter(b.dataset.fridgeCategory)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter,addManualCartItem,transferCartToFridge,setFridgeCategoryFilter,setFridgeCategory})}
 
