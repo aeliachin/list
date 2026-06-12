@@ -473,104 +473,45 @@ select#fridgeCategoryField,
 }
 
 
-/* v22f: 冰箱数量/单位/改目标/删除布局 */
-.fridge-actions-box{
-  display:grid!important;
-  gap:8px!important;
-  align-content:center!important;
+/* v24: 冰箱卡片布局稳定版 */
+.fridge-item{
+  grid-template-columns:auto minmax(0,1fr) minmax(220px,270px)!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+.fridge-info{
   min-width:0!important;
 }
-.fridge-action-row{
-  display:grid!important;
-  grid-template-columns:minmax(64px,96px) auto minmax(96px,120px)!important;
-  gap:8px!important;
-  align-items:center!important;
-}
-.fridge-qty{
-  width:96px!important;
-  max-width:96px!important;
-  min-width:64px!important;
-}
-.fridge-unit{
-  justify-self:start!important;
-  min-width:36px!important;
-  text-align:center!important;
-}
-.fridge-goal-btn,
-.fridge-delete-btn{
-  width:120px!important;
-  max-width:120px!important;
-  min-height:44px!important;
-  justify-self:end!important;
-}
-.fridge-delete-btn{
-  grid-column:3/4!important;
-}
-@media(max-width:760px){
-  .item>.fridge-actions-box{
-    grid-column:2/-1!important;
-  }
-  .fridge-action-row{
-    grid-template-columns:minmax(70px,92px) auto minmax(92px,112px)!important;
-    gap:8px!important;
-  }
-  .fridge-qty{
-    width:92px!important;
-    max-width:92px!important;
-  }
-  .fridge-goal-btn,
-  .fridge-delete-btn{
-    width:112px!important;
-    max-width:112px!important;
-  }
-}
-@media(max-width:420px){
-  .fridge-action-row{
-    grid-template-columns:72px 34px 96px!important;
-    gap:7px!important;
-  }
-  .fridge-qty{
-    width:72px!important;
-    max-width:72px!important;
-    padding-left:12px!important;
-    padding-right:8px!important;
-  }
-  .fridge-goal-btn,
-  .fridge-delete-btn{
-    width:96px!important;
-    max-width:96px!important;
-  }
-}
-
-
-/* v22g: 冰箱卡片两行布局
-   第1行：数量 / 单位 / 改目标
-   第2行：分类 / 下拉菜单 / 删除
-*/
 .fridge-tools{
   display:grid!important;
-  gap:10px!important;
-  align-content:center!important;
+  gap:8px!important;
   min-width:0!important;
+  align-content:center!important;
 }
-.fridge-row{
+.fridge-category-line{
   display:grid!important;
-  grid-template-columns:52px 82px 40px 112px!important;
+  gap:6px!important;
+}
+.fridge-category-line span{
+  margin:0 0 2px 4px!important;
+}
+.fridge-item-category{
+  width:100%!important;
+  min-height:44px!important;
+}
+.fridge-control-row{
+  display:grid!important;
+  grid-template-columns:76px auto 108px!important;
   gap:8px!important;
   align-items:center!important;
+  width:100%!important;
 }
-.fridge-row-label{
-  font-size:13px!important;
-  font-weight:900!important;
-  color:var(--muted)!important;
-  white-space:nowrap!important;
-}
-.fridge-qty{
-  width:82px!important;
-  max-width:82px!important;
-  min-width:0!important;
-  height:44px!important;
-  padding:8px 10px!important;
+.fridge-qty-short{
+  width:76px!important;
+  max-width:76px!important;
+  min-width:76px!important;
+  padding-left:12px!important;
+  padding-right:8px!important;
 }
 .fridge-unit{
   justify-self:start!important;
@@ -579,64 +520,58 @@ select#fridgeCategoryField,
 }
 .fridge-goal-btn,
 .fridge-delete-btn{
-  width:112px!important;
-  max-width:112px!important;
+  width:108px!important;
+  max-width:108px!important;
   min-height:44px!important;
   justify-self:end!important;
 }
-.fridge-category-row .fridge-item-category{
-  grid-column:2/4!important;
-  width:100%!important;
-  min-width:0!important;
-  height:44px!important;
-  padding:8px 12px!important;
+.fridge-delete-btn{
+  grid-column:3/4!important;
 }
-.fridge-category-row .fridge-delete-btn{
-  grid-column:4/5!important;
-}
-.fridge-actions-box .small.fridge-desc,
-.fridge-tools > .small.fridge-desc,
-.fridge-tools > .mini-label,
-.fridge-tools > .qtyline{
-  display:none!important;
+.danger-mini{
+  background:#fff3f6!important;
+  color:#c3456e!important;
+  border:1px solid rgba(195,69,110,.14)!important;
 }
 @media(max-width:760px){
-  .item>.fridge-tools{
-    grid-column:2/-1!important;
+  .fridge-item{
+    grid-template-columns:auto minmax(0,1fr)!important;
+    align-items:start!important;
   }
-  .fridge-row{
-    grid-template-columns:46px 76px 34px 102px!important;
+  .fridge-item>.fridge-tools{
+    grid-column:2/-1!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .fridge-control-row{
+    grid-template-columns:72px auto 100px!important;
     gap:7px!important;
   }
-  .fridge-qty{
-    width:76px!important;
-    max-width:76px!important;
+  .fridge-qty-short{
+    width:72px!important;
+    max-width:72px!important;
+    min-width:72px!important;
   }
   .fridge-goal-btn,
   .fridge-delete-btn{
-    width:102px!important;
-    max-width:102px!important;
+    width:100px!important;
+    max-width:100px!important;
   }
 }
 @media(max-width:390px){
-  .fridge-row{
-    grid-template-columns:42px 68px 30px 92px!important;
+  .fridge-control-row{
+    grid-template-columns:66px auto 92px!important;
     gap:6px!important;
   }
-  .fridge-qty{
-    width:68px!important;
-    max-width:68px!important;
-    padding-left:8px!important;
-    padding-right:6px!important;
+  .fridge-qty-short{
+    width:66px!important;
+    max-width:66px!important;
+    min-width:66px!important;
   }
   .fridge-goal-btn,
   .fridge-delete-btn{
     width:92px!important;
     max-width:92px!important;
-    padding-left:8px!important;
-    padding-right:8px!important;
-  }
-  .fridge-row-label{
-    font-size:12px!important;
+    font-size:14px!important;
   }
 }
