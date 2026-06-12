@@ -1,7 +1,7 @@
 const SUPABASE_URL=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_URL)||"";
 const SUPABASE_ANON_KEY=(window.APP_CONFIG&&window.APP_CONFIG.SUPABASE_ANON_KEY)||"";
 const APP_ROW_ID="main";
-const STORAGE_KEY="family-recipe-supabase-cache-v20";
+const STORAGE_KEY="family-recipe-supabase-cache-v21";
 const LOGIN_TIMEOUT_MS=15000;
 
 let supabaseClient=null;
@@ -322,63 +322,43 @@ function setFridgeCategoryFilter(category){
   document.querySelectorAll(".fridge-subtab").forEach(b=>b.classList.toggle("active",b.dataset.fridgeCategory===category));
   renderFridge();
 }
+function categoryOptions(selected){
+  return FRIDGE_CATEGORIES.map(c=>`<option value="${c}" ${c===selected?"selected":""}>${c}</option>`).join("");
+}
 function renderFridge(){
   const list=filteredFridge();
   const html=list.map(i=>{
     const b=i.inCart?Math.max(1,buyQty(i)||i.needQty||1):buyQty(i);
     const cat=normalizeFridgeCategory(i.category,i.name);
-    return `<div class="item ${!i.inCart&&b===0?"ready":""}">
+    return `<div class="item fridge-item ${!i.inCart&&b===0?"ready":""}">
       <button class="xbtn ${i.inCart||b>0?"active":""}" onclick="addFridgeToCart('${i.id}')">×</button>
-      <div>
-        <div class="name">${esc(i.name)}</div>
-        <div class="small">分类：${esc(cat)}</div>
-        <div class="small">目标常备：${fmt(i.needQty,i.unit)}</div>
-        <div class="small">当前已有：${fmt(i.haveQty,i.unit)}</div>
-        <div class="small">状态：${i.inCart||b>0?`购物车待买 ${fmt(b,i.unit)}`:"暂不购买"}</div>
+      <div class="fridge-info">
+        <div class="name fridge-name">${esc(i.name)}</div>
+        <div class="small fridge-desc">目标常备：${fmt(i.needQty,i.unit)}</div>
+        <div class="small fridge-desc">当前已有：${fmt(i.haveQty,i.unit)}</div>
+        <div class="small fridge-desc">状态：${i.inCart||b>0?`购物车待买 ${fmt(b,i.unit)}`:"暂不购买"}</div>
       </div>
-      <div class="qtybox">
-        <div class="small">当前已有数量</div>
-        <div class="qtyline"><input class="qty" type="number" min="0" step="0.1" value="${i.haveQty}" onchange="setFridgeHave('${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div>
-        <button class="mini" onclick="editFridgeTarget('${i.id}')">改目标/分类</button>
+      <div class="qtybox fridge-tools">
+        <label class="mini-label"><span>分类</span><select class="fridge-item-category" onchange="setFridgeCategory('${i.id}',this.value)">${categoryOptions(cat)}</select></label>
+        <div class="small fridge-desc">当前已有数量</div>
+        <div class="qtyline"><input class="qty fridge-qty" type="number" min="0" step="0.1" value="${i.haveQty}" onchange="setFridgeHave('${i.id}',this.value)"><span class="badge">${esc(i.unit||"数量")}</span></div>
+        <button class="mini" onclick="editFridgeTarget('${i.id}')">改目标</button>
       </div>
     </div>`;
   }).join("");
-  $("#fridgeList").innerHTML=html?`<div class="panel"><div class="list">${html}</div></div>`:`<div class="empty">这个分类里还没有食材。</div>`;
+  $("#fridgeList").innerHTML=html?`<div class="panel"><div class="list fridge-list">${html}</div></div>`:`<div class="empty">这个分类里还没有食材。</div>`;
 }
 
-function selectRecipe(id,go=false){currentRecipeId=id;render();if(go)switchTab("prep")}
-function findItem(rid,iid){return state.recipes.find(r=>r.id===rid)?.ingredients.find(i=>i.id===iid)}
-function setHaveQty(rid,iid,v){const i=findItem(rid,iid);if(!i)return;i.haveQty=Math.min(num(v),i.needQty);render();toast("已更新家里已有数量")}
-function markMissing(rid,iid){const i=findItem(rid,iid);if(!i)return;if(buyQty(i)===0)i.haveQty=0;currentRecipeId=rid;render();toast("已同步到购物车")}
-function addQtyToItem(target,qty){
-  if(qty<=0)return 0;
-  if(target.type==="recipe"){
-    const i=findItem(target.recipeId,target.itemId),b=buyQty(i),add=Math.min(qty,b);
-    i.haveQty=Math.min(i.needQty,i.haveQty+add);
-    return add;
-  }
-  if(target.type==="fridge"){
-    const i=state.fridge.find(x=>x.id===target.itemId),add=qty;
-    i.haveQty+=add;
-    if(i.haveQty>=i.needQty)i.inCart=false;
-    return add;
-  }
-  if(target.type==="manual"){
-    const i=(state.manualCart||[]).find(x=>x.id===target.itemId);
-    if(!i)return 0;
-    const add=Math.min(qty,num(i.needQty));
-    i.needQty=Math.max(0,num(i.needQty)-add);
-    if(i.needQty<=0)state.manualCart=state.manualCart.filter(x=>x.id!==target.itemId);
-    return add;
-  }
-  return 0;
-}
-function applyGroupPurchased(groupKey,inputId){let qty=num(document.getElementById(inputId)?.value);if(qty<=0){toast("请输入采购数量");return}const g=collectCartGroups().groups.find(x=>x.key===groupKey);if(!g)return;for(const item of g.items){if(qty<=0)break;const used=addQtyToItem(item,qty);qty-=used}render();toast("已按来源自动分配并同步")}
-function addFridgeToCart(id){const i=state.fridge.find(x=>x.id===id);if(!i)return;i.inCart=true;if(buyQty(i)===0)i.haveQty=0;render();toast("已同步到购物车")}
-function setFridgeHave(id,v){const i=state.fridge.find(x=>x.id===id);if(!i)return;i.haveQty=num(v);i.inCart=buyQty(i)>0;render();toast("冰箱数量已更新")}
 function addFridgeItem(){const input=$("#fridgeNameField"),name=input.value.trim();if(!name){toast("请输入食材名称");return}state.fridge.unshift({id:uid(),name,needQty:1,unit:"份",haveQty:0,inCart:false});input.value="";render();toast("已加入冰箱")}
 function editFridgeTarget(id){const i=state.fridge.find(x=>x.id===id);if(!i)return;const q=prompt(`目标常备数量：${i.name}`,i.needQty);if(q===null)return;const u=prompt(`单位：${i.name}`,i.unit||"份");i.needQty=num(q)||1;i.unit=(u||i.unit||"份").trim();i.inCart=buyQty(i)>0;render();toast("目标数量已更新")}
-function switchTab(tab){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));setHero(tab);window.scrollTo({top:0,behavior:"smooth"})}
+function switchTab(tab){
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===tab));
+  const addBtn=$("#addRecipeBtn");
+  if(addBtn)addBtn.hidden=tab!=="recipes";
+  setHero(tab);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 function openEditor(id=null){ensureCategoryDropdown();editingId=id;const r=state.recipes.find(x=>x.id===id);$("#dialogTitle").textContent=r?"编辑菜谱":"添加菜谱";$("#nameField").value=r?.name||"";$("#categoryField").value=normalizeCategory(r?.category||"热菜");$("#servingsField").value=r?.servings||"";$("#timeField").value=r?.time||"";$("#ingredientsField").value=r?.ingredients?.map(i=>`${i.name} | ${i.needQty} | ${i.unit}`).join("\n")||"";$("#stepsField").value=r?.steps||"";$("#recipeDialog").showModal()}
 function parseIngredients(text,old=[]){return text.split("\n").map(x=>x.trim()).filter(Boolean).map(line=>{const [n="",q="",u=""]=line.split("|");const name=n.trim(),oldItem=old.find(i=>i.name===name),need=num(q.trim());return{id:oldItem?.id||uid(),name,needQty:need,unit:u.trim(),haveQty:Math.min(oldItem?.haveQty||0,need),amount:fmt(need,u.trim())}}).filter(i=>i.name)}
 function handleSubmit(e){e.preventDefault();const old=state.recipes.find(r=>r.id===editingId);const recipe={id:old?.id||uid(),name:$("#nameField").value.trim(),category:normalizeCategory($("#categoryField").value),servings:$("#servingsField").value.trim(),time:$("#timeField").value.trim(),image:"",ingredients:parseIngredients($("#ingredientsField").value,old?.ingredients||[]),steps:$("#stepsField").value.trim()};if(!recipe.name||!recipe.ingredients.length){toast("请填写菜名和用料");return}if(old)state.recipes[state.recipes.findIndex(x=>x.id===editingId)]=recipe;else state.recipes.unshift(recipe);currentRecipeId=recipe.id;$("#recipeDialog").close();render();toast("菜单已保存")}
@@ -403,7 +383,7 @@ function addManualCartItem(){
 async function shareShoppingList(){const {groups}=collectCartGroups();if(!groups.length){toast("没有待采购内容");return}const text="家庭食谱｜待采购清单\n\n"+groups.map((g,n)=>`${n+1}. ${g.name} - ${fmt(g.total,g.unit)}（${g.items.map(x=>x.source).join("、")}）`).join("\n");if(navigator.share){try{await navigator.share({title:"待采购清单",text});toast("已打开分享菜单")}catch(e){if(e.name!=="AbortError")copyText(text)}}else copyText(text)}
 async function copyText(text){try{await navigator.clipboard.writeText(text)}catch{const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}toast("待采购清单已复制，可以粘贴发送")}
 
-function bindUI(){ensureCategoryDropdown();document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));document.querySelectorAll(".fridge-subtab").forEach(b=>b.addEventListener("click",()=>setFridgeCategoryFilter(b.dataset.fridgeCategory)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter,addManualCartItem,transferCartToFridge,setFridgeCategoryFilter})}
+function bindUI(){ensureCategoryDropdown();const addBtn=$("#addRecipeBtn");if(addBtn)addBtn.hidden=true;document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));$("#searchInput").addEventListener("input",renderRecipes);document.querySelectorAll(".subtab").forEach(b=>b.addEventListener("click",()=>setRecipeTypeFilter(b.dataset.recipeType)));document.querySelectorAll(".fridge-subtab").forEach(b=>b.addEventListener("click",()=>setFridgeCategoryFilter(b.dataset.fridgeCategory)));$("#addRecipeBtn").addEventListener("click",()=>openEditor());$("#closeDialog").addEventListener("click",()=>$("#recipeDialog").close());$("#cancelBtn").addEventListener("click",()=>$("#recipeDialog").close());$("#recipeForm").addEventListener("submit",handleSubmit);$("#loginForm").addEventListener("submit",handleLogin);$("#logoutBtn").addEventListener("click",handleLogout);Object.assign(window,{selectRecipe,setHaveQty,markMissing,applyGroupPurchased,switchTab,openEditor,shareShoppingList,addFridgeToCart,setFridgeHave,addFridgeItem,editFridgeTarget,deleteRecipe,toggleRecipeCard,setRecipeTypeFilter,addManualCartItem,transferCartToFridge,setFridgeCategoryFilter,setFridgeCategory})}
 
 bindUI();
 initAuth();
